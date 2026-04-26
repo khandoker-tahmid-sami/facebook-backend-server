@@ -60,6 +60,26 @@
             "name": "Saad Hasan",
             "avatar": "uploads/avatar/avatar-1708789609571-36760872.jpeg"
           }
+        },
+        {
+          "id": "58fd6aa1-896c-46ec-be4e-56eeb6c7bd54",
+          "comment": "Mara khao",
+          "createdAt": "2026-04-26T07:08:53.603Z",
+          "author": {
+            "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",
+            "name": "Halimatus Sadia Runa",
+            "avatar": "uploads/avatar/avatar-1777112140338-217407113.jpeg"
+          }
+        },
+        {
+          "id": "6f7a4460-8ab5-43f7-be79-c278464a9feb",
+          "comment": "hoise",
+          "createdAt": "2026-04-26T10:12:27.963Z",
+          "author": {
+            "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",
+            "name": "Halimatus Sadia Runa",
+            "avatar": "uploads/avatar/avatar-1777112140338-217407113.jpeg"
+          }
         }
       ],
       "likes": [
@@ -110,7 +130,8 @@
         }
       ],
       "likes": [
-        "6fd3ed42-2275-4d5f-a436-e5a3bf586c56"
+        "6fd3ed42-2275-4d5f-a436-e5a3bf586c56",
+        "da9bd328-adb3-4dc5-96c4-b4d02ac61234"
       ],
       "createAt": "2024-02-24T12:18:21.686Z"
     },
@@ -234,7 +255,18 @@
         "name": "Tapas Adhikary",
         "avatar": "uploads/avatar/avatar-1708770640883-148182382.png"
       },
-      "comments": [],
+      "comments": [
+        {
+          "id": "b09b8083-67d7-40dd-bbb4-fa9cf02b6c84",
+          "comment": "Thik ase bhai ",
+          "createdAt": "2026-04-26T07:12:04.878Z",
+          "author": {
+            "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",
+            "name": "Halimatus Sadia Runa",
+            "avatar": "uploads/avatar/avatar-1777112140338-217407113.jpeg"
+          }
+        }
+      ],
       "likes": [],
       "createAt": "2024-02-24T12:29:59.028Z"
     },
@@ -460,6 +492,45 @@
       "comments": [],
       "likes": [],
       "createAt": "2024-02-25T07:16:53.349Z"
+    },
+    {
+      "id": "cbb9be65-d656-4d60-93b6-a144c02af92d",
+      "content": "Hello, I am halimatus sadia runa. Living in Norway. I will soon start my masters degree.",
+      "image": "uploads/posts/image-1777227735997-647746369.jpeg",
+      "postType": "image",
+      "author": {
+        "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",
+        "name": "Halimatus Sadia Runa",
+        "avatar": "uploads/avatar/avatar-1777216248361-832904093.jpeg"
+      },
+      "comments": [
+        {
+          "id": "37af6edf-1602-4462-92c3-9cff601fa40a",
+          "comment": "I am beautiful",
+          "createdAt": "2026-04-26T18:23:03.354Z",
+          "author": {
+            "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",
+            "name": "Halimatus Sadia Runa",
+            "avatar": "uploads/avatar/avatar-1777216248361-832904093.jpeg"
+          }
+        }
+      ],
+      "likes": [],
+      "createAt": "2026-04-26T18:22:16.002Z"
+    },
+    {
+      "id": "bed3e5f4-0ee5-420c-86f4-52478785ab57",
+      "content": "I am not happy with my husband",
+      "image": null,
+      "postType": "text",
+      "author": {
+        "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",
+        "name": "Halimatus Sadia Runa",
+        "avatar": "uploads/avatar/avatar-1777216248361-832904093.jpeg"
+      },
+      "comments": [],
+      "likes": [],
+      "createAt": "2026-04-26T18:37:07.637Z"
     }
   ],
   "comments": [],
@@ -467,11 +538,11 @@
     {
       "id": "6fd3ed42-2275-4d5f-a436-e5a3bf586c56",
       "password": "$2b$08$t5Aar/0hgHTMdCeLtn3KhOlWDVIAHcFUTkRPeWASPhbYAea5kxKvW",
-      "firstName": "Khandoker Tahmid",
-      "lastName": "Sami",
-      "avatar": "uploads/avatar/avatar-1776672756678-752536520.jpg",
-      "email": "prinon96@gmail.com",
-      "bio": "Tahmid currently working as a frontend developer at Catch Media in Norway"
+      "firstName": "Saad ",
+      "lastName": "Hasan",
+      "avatar": "uploads/avatar/avatar-1777107340685-440508627.PNG",
+      "email": "saadh392@mail.com",
+      "bio": "Saad hasan is in bangladesh"
     },
     {
       "id": "1aeef0f0-77ba-456b-8b5b-d4145a9b5410",
@@ -514,6 +585,31 @@
       "avatar": "uploads/avatar/avatar-1708802845791-219561000.png",
       "email": "rambo@email.com",
       "bio": "I am Rambo!!!"
+    },
+    {
+      "id": "f0be5f14-b29f-4e85-980c-4c040ec25c68",
+      "password": "$2b$08$M400sawPtlfQBTOTbreF1eFwJ5oHNBK7PseigmEMNtzPsFdS1hdcG",
+      "firstName": "Khandoker Tahmid",
+      "lastName": "Sami",
+      "avatar": "uploads/avatar/avatar-1777108576168-661207484.jpg",
+      "email": "prinon96@gmail.com",
+      "bio": "Working at Catch media"
+    },
+    {
+      "id": "bc026e98-774c-43f4-a260-77dc3235d4f4",
+      "password": "$2b$08$ICLH06ToZ7Ot9XLG6/pgi.G4pEBQf2NVOzY1C1gs1TsZeEdVtYXdq",
+      "firstName": "Khandoker",
+      "lastName": "Sami",
+      "avatar": "uploads/avatar/avatar-1777109865604-647803356.PNG",
+      "email": "prinon97@gmail.com"
+    },
+    {
+      "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",
+      "password": "$2b$08$.gSLDzBXJ2zMM15Slrn6c.8B8sN4TSC3Itp7plQyTaUL8SVdY7z0K",
+      "firstName": "Halimatus Sadia",
+      "lastName": "Runa",
+      "email": "sadiaruna48@gmail.com",
+      "avatar": "uploads/avatar/avatar-1777216248361-832904093.jpeg"
     }
   ]
 }
