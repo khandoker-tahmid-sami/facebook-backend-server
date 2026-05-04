@@ -528,28 +528,7 @@
         "name": "Khandoker Tahmid Sami",
         "avatar": "uploads/avatar/avatar-1777108576168-661207484.jpg"
       },
-      "comments": [
-        {
-          "id": "a5f2f4d7-8bbf-4551-adfe-89c7776aba08",
-          "comment": "Got it",
-          "createdAt": "2026-04-28T17:57:41.865Z",
-          "author": {
-            "id": "f0be5f14-b29f-4e85-980c-4c040ec25c68",
-            "name": "Khandoker Tahmid Sami",
-            "avatar": "uploads/avatar/avatar-1777108576168-661207484.jpg"
-          }
-        },
-        {
-          "id": "c226bde3-e400-4363-b720-33c351b85865",
-          "comment": "Delete",
-          "createdAt": "2026-04-28T18:05:48.247Z",
-          "author": {
-            "id": "f0be5f14-b29f-4e85-980c-4c040ec25c68",
-            "name": "Khandoker Tahmid Sami",
-            "avatar": "uploads/avatar/avatar-1777108576168-661207484.jpg"
-          }
-        }
-      ],
+      "comments": [],
       "likes": [],
       "createAt": "2026-04-28T17:55:49.176Z"
     }
