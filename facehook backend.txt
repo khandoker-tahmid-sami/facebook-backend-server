@@ -1,0 +1,291 @@
+Backend Overview
+Language & Runtime
+JavaScript (Node.js)
+Entry point: main.js — server runs on port 3000
+Frameworks & Key Libraries
+Library	Purpose
+Express.js v4.18	Web framework
+JSON Server v0.17	File-based mock database/REST API
+jsonwebtoken v9	JWT access & refresh tokens
+bcrypt v5	Password hashing
+multer v1.4	File/image uploads
+cors v2.8	Cross-origin requests
+dotenv v16	Environment variable loading
+json-server-auth	Auth middleware for JSON Server
+Database
+Not a traditional DB — uses a single JSON file as the database
+File: database/db.json
+Powered by lowdb (via JSON Server) — reads/writes directly to that file
+Collections: users, posts
+This is suitable for development/prototyping only, not production
+Project Structure
+
+backend-server/
+├── main.js                  # Entry point
+├── .env                     # Secrets & JWT config
+├── database/
+│   └── db.json              # The entire database (JSON file)
+├── router/                  # Route definitions
+│   ├── index.js
+│   ├── user.route.js        # Auth routes
+│   ├── posts.route.js       # Post CRUD
+│   └── profile.route.js     # Profile routes
+├── controller/              # Request handlers
+├── services/                # Business logic
+├── middleware/              # JWT auth, file upload
+│   ├── checkAuth.js
+│   ├── multer.js            # Avatar uploads
+│   └── postImage.js         # Post image uploads
+└── util/                    # Helpers (catchAsync, token gen)
+API Endpoints
+Auth
+
+POST /auth/register — register user
+POST /auth/login — login, returns JWT tokens
+POST /auth/refresh-token — get new access token
+Posts
+
+GET/POST /posts — list / create posts
+GET/PATCH/DELETE /posts/:id — single post operations
+PATCH /posts/:id/like — like/unlike
+PATCH /posts/:id/comment — add comment
+DELETE /posts/:id/comment/:commentId — delete comment
+Profile
+
+GET /profile/:userId — get profile + posts
+PATCH /profile/:userId — update profile
+POST /profile/:userId/avatar — upload avatar
+Authentication
+JWT with refresh token rotation
+Access token expires in 2 hours, refresh token in 1 day
+Passwords hashed with bcrypt (8 salt rounds)
+All routes protected except /auth/*
+Key Notes
+This appears to be a "FaceHook" social media API (Facebook-like clone)
+The JSON file database makes it easy to prototype but not production-ready
+The .env file uses placeholder secrets ('somesecretekey') — should be replaced before any real deployment
+No schema validation library (Joi/Zod) — only basic field checks
+File uploads stored under public/uploads/ (avatar & posts subfolders)
+
+
+
+
+
+
+
+
+*********************************************************************Production Readiness Guide for This Backend
+CRITICAL — Must Fix Before Any Deployment
+1. Replace the JSON File Database with a Real Database
+Current problem: database/db.json is a single flat file. It has no concurrency protection, no indexing, no transactions, and will corrupt under simultaneous writes.
+
+What to do: Migrate to MongoDB (easiest migration path since your data is already JSON-shaped) or PostgreSQL.
+
+Recommended: MongoDB + Mongoose
+
+
+npm install mongoose
+npm uninstall json-server json-server-auth
+Replace db.get("users").find({ email }).value() style queries with Mongoose models:
+
+
+// models/User.js
+const mongoose = require('mongoose');
+const userSchema = new mongoose.Schema({
+  email:     { type: String, required: true, unique: true },
+  password:  { type: String, required: true, select: false },
+  firstName: { type: String, required: true },
+  lastName:  { type: String, required: true },
+  avatar:    { type: String, default: null },
+}, { timestamps: true });
+module.exports = mongoose.model('User', userSchema);
+Add to .env:
+
+
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/facehook
+2. Fix the Secret Keys
+Current problem in .env:1-5:
+
+
+SECRET_KEY = 'somesecretekey'
+REFRESH_SECRET_KEY = 'somesecretekey'
+Both keys are identical and weak. If one leaks, both token types are compromised.
+
+What to do: Generate strong, unique secrets:
+
+
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+Run twice — one for each key. Never commit .env to git.
+
+3. Fix CORS — origin: true Allows Everyone
+Current problem in main.js:11:
+
+
+app.use(cors({ credentials: true, origin: true }));
+origin: true mirrors every request origin, meaning any website can make credentialed requests to your API.
+
+What to do:
+
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+app.use(cors({
+  credentials: true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+    else callback(new Error('Not allowed by CORS'));
+  }
+}));
+Add to .env:
+
+
+ALLOWED_ORIGINS=https://yourfrontend.com
+4. Fix Error Responses Leaking Internal Details
+Current problem in main.js:30-34:
+
+
+app.use((err, req, res, _next) => {
+  res.status(500).json({ error: err.message }); // exposes internal error messages
+});
+This sends raw error messages (stack traces, DB errors, file paths) to the client.
+
+What to do:
+
+
+app.use((err, req, res, _next) => {
+  const isDev = process.env.NODE_ENV === 'development';
+  const status = err.status || 500;
+  res.status(status).json({
+    error: isDev ? err.message : 'Internal server error',
+  });
+});
+5. Add Input Validation
+Current problem: services/user.serivce.js:30-48 — register does zero validation. Anyone can register with an empty password or a non-email string.
+
+What to do: Install zod or express-validator:
+
+
+npm install zod
+
+const { z } = require('zod');
+const registerSchema = z.object({
+  email:     z.string().email(),
+  password:  z.string().min(8).max(100),
+  firstName: z.string().min(1).max(50),
+  lastName:  z.string().min(1).max(50),
+});
+// In your controller, before calling service:
+const result = registerSchema.safeParse(req.body);
+if (!result.success) return res.status(400).json({ error: result.error.flatten() });
+IMPORTANT — Security & Stability
+6. Add Rate Limiting
+Without this, your /auth/login endpoint can be brute-forced endlessly.
+
+
+npm install express-rate-limit
+
+const rateLimit = require('express-rate-limit');
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  message: { error: 'Too many attempts, try again later' }
+});
+app.use('/auth', authLimiter);
+7. Add Security Headers with Helmet
+
+npm install helmet
+
+const helmet = require('helmet');
+app.use(helmet()); // adds X-Frame-Options, CSP, HSTS, etc.
+Add this before all other middleware in main.js.
+
+8. Separate nodemon from Production Dependencies
+Current problem in package.json:12 — nodemon is in dependencies, not devDependencies. It ships to production unnecessarily.
+
+Fix:
+
+
+npm install --save-dev nodemon
+Also add a proper start script for production:
+
+
+"scripts": {
+  "dev": "nodemon main.js",
+  "start": "node main.js"
+}
+9. Add Refresh Token Revocation
+Current problem in services/user.serivce.js:62-80 — refresh tokens are stateless. You cannot invalidate them on logout. If a refresh token is stolen, it is valid for the full 1-day window.
+
+What to do: Store issued refresh tokens in the database and delete them on logout:
+
+
+// On login: save refreshToken to DB alongside userId
+// On logout: delete it from DB
+// On refresh: check DB first, reject if not found
+10. Fix File Upload Security
+Current problem in middleware/multer.js — files are validated only by MIME type, which can be spoofed. Also, there's no check on who can upload to which profile.
+
+What to do:
+
+Validate file magic bytes (not just MIME type) using file-type package
+Check that req.claims.id === req.params.userId before allowing avatar upload
+Store uploads in cloud storage (AWS S3, Cloudinary) instead of the local filesystem — local files are lost on server restart/redeploy
+GOOD PRACTICE — Reliability & Maintainability
+11. Add Logging
+Replace console.log with a structured logger:
+
+
+npm install winston
+Log errors with timestamps, request IDs, and levels (info, warn, error). Never log passwords or tokens.
+
+12. Add a Health Check Endpoint
+
+app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
+Load balancers and Docker orchestrators (Kubernetes, Railway, Render) need this.
+
+13. Set NODE_ENV=production in Your Deployment
+This unlocks security behaviors in Express (disables error stack traces, etc.):
+
+
+NODE_ENV=production
+PORT=3000
+And read the port dynamically in main.js:36:
+
+
+app.listen(process.env.PORT || 3000, ...)
+14. Add a .env.example File
+Document every required environment variable without real values, so new developers know what to configure:
+
+
+SECRET_KEY=
+REFRESH_SECRET_KEY=
+JWT_EXPIRES_IN=2h
+REFRESH_JWT_EXPIRES_IN=1d
+MONGODB_URI=
+ALLOWED_ORIGINS=
+NODE_ENV=development
+PORT=3000
+15. Add .env to .gitignore
+Make sure .env is never committed:
+
+
+# .gitignore
+.env
+node_modules/
+public/uploads/
+Summary Checklist
+Priority	Task	Status
+Critical	Replace JSON file DB with MongoDB/PostgreSQL	Needed
+Critical	Replace placeholder JWT secrets with strong random keys	Needed
+Critical	Restrict CORS to specific origins	Needed
+Critical	Don't leak raw error messages to clients	Needed
+Critical	Add input validation (zod/express-validator)	Needed
+Important	Add rate limiting on auth routes	Needed
+Important	Add Helmet security headers	Needed
+Important	Move nodemon to devDependencies, add start script	Quick fix
+Important	Add refresh token revocation on logout	Needed
+Important	Move file uploads to cloud storage (S3/Cloudinary)	Needed
+Good practice	Add structured logging (Winston)	Recommended
+Good practice	Add /health endpoint	Quick fix
+Good practice	Use process.env.PORT, set NODE_ENV	Quick fix
+Good practice	Create .env.example and update .gitignore	Quick fix
+The database migration is the largest single task and the most important — everything else can be layered on top incrementally.
