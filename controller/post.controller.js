@@ -127,6 +127,25 @@ const deleteComment = (req, res) => {
   return res.status(200).send(response);
 };
 
+const editComment = (req, res) => {
+  if (!req.body?.comment || req.body?.comment === "") {
+    return res.statu(400).send({ message: "Comment can not be empty" });
+  }
+
+  const { postId, commentId } = req.params;
+  const { db } = req.app;
+  const user = getAuthUser(req);
+
+  const response = PostService.editComment(
+    postId,
+    commentId,
+    db,
+    user,
+    req.body.comment,
+  );
+  return res.status(200).send(response);
+};
+
 module.exports.PostController = {
   getPosts,
   createNewPost,
@@ -136,4 +155,5 @@ module.exports.PostController = {
   likeAPost,
   commentPost,
   deleteComment,
+  editComment,
 };

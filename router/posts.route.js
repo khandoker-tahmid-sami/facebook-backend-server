@@ -19,6 +19,8 @@ router.patch("/:postId/like", PostController.likeAPost);
 
 router.patch("/:postId/comment", PostController.commentPost);
 
+router.patch("/:postId/comment/:commentId", PostController.editComment);
+
 router.delete("/:postId/comment/:commentId", PostController.deleteComment);
 
 module.exports = router;

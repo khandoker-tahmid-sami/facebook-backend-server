@@ -314,3 +314,89 @@ Two bugs fixed in services/post.service.js:56-74:
 
 Find the comment first — commentToDelete is looked up from post.comments before any filtering, so we can actually check who wrote it.
 Authorization operator fixed — changed || to &&: the error now only throws when the user is neither the post author nor the comment author (previously || meant deleting your own comment on someone else's post would always fail).
+
+
+
+
+****************************Added a endpoint to edit a comment**********************************************
+
+
+Step 1 — Add editComment to the Service
+In services/post.service.js, add this function before deleteComment:
+
+
+const editComment = (postId, commentId, db, user, newComment) => {
+  const post = getPostById(postId, db);
+  const { id } = user;
+
+  const commentToEdit = post.comments.find((comment) => comment.id === commentId);
+
+  if (!commentToEdit) {
+    throw new Error("Comment not found");
+  }
+
+  // Only the comment author can edit
+  if (commentToEdit.author.id !== id) {
+    throw new Error("You are not allowed to edit this comment");
+  }
+
+  const comments = post.comments.map((comment) =>
+    comment.id === commentId
+      ? { ...comment, comment: newComment, updatedAt: new Date() }
+      : comment
+  );
+
+  db.get("posts").updateById(postId, { comments }).write();
+
+  return { message: "Comment Updated", commentCount: comments.length, comments };
+};
+Also export it at the bottom:
+
+
+module.exports.PostService = { likePost, comment, editComment, deleteComment };
+Step 2 — Add editComment to the Controller
+In controller/post.controller.js, add this function before deleteComment:
+
+
+const editComment = (req, res) => {
+  if (!req.body?.comment || req.body?.comment === "") {
+    return res.status(400).send({ message: "Comment cannot be empty" });
+  }
+
+  const { postId, commentId } = req.params;
+  const { db } = req.app;
+  const user = getAuthUser(req);
+
+  const response = PostService.editComment(postId, commentId, db, user, req.body.comment);
+  return res.status(200).send(response);
+};
+Also add it to the exports at the bottom:
+
+
+module.exports.PostController = {
+  getPosts,
+  createNewPost,
+  deletePost,
+  updatePost,
+  getSinglePost,
+  likeAPost,
+  commentPost,
+  editComment,       // ← add this
+  deleteComment,
+};
+Step 3 — Add the Route
+In router/posts.route.js, add this line alongside the existing deleteComment route:
+
+
+router.patch("/:postId/comment/:commentId", PostController.editComment);  // ← add
+router.delete("/:postId/comment/:commentId", PostController.deleteComment);
+Summary
+Before  After
+PATCH /posts/:postId/comment  Add comment (unchanged)
+PATCH /posts/:postId/comment/:commentId Edit comment (new)
+DELETE /posts/:postId/comment/:commentId  Delete comment (unchanged)
+Once done, test in Postman with:
+
+URL: PATCH {{BASE_URL}}/posts/<postId>/comment/<commentId>
+Body: { "comment": "edited text here" }
+Header: Authorization: Bearer <token>

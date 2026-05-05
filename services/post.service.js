@@ -43,7 +43,12 @@ const comment = (postId, db, user, comment) => {
   // Add the comment to the comments array
   const comments = [
     ...post.comments,
-    { id: crypto.randomUUID(), comment, createdAt: new Date(), author: { id, name, avatar } },
+    {
+      id: crypto.randomUUID(),
+      comment,
+      createdAt: new Date(),
+      author: { id, name, avatar },
+    },
   ];
 
   // Update the post with the new comments
@@ -53,11 +58,14 @@ const comment = (postId, db, user, comment) => {
   return { message: "Comment Added", commentCount: comments.length, comments };
 };
 
+//delete comment service
 const deleteComment = (postId, commentId, db, user) => {
   const post = getPostById(postId, db);
   const { id } = user;
 
-  const commentToDelete = post.comments.find((comment) => comment.id === commentId);
+  const commentToDelete = post.comments.find(
+    (comment) => comment.id === commentId,
+  );
 
   if (!commentToDelete) {
     throw new Error("Comment not found");
@@ -74,7 +82,45 @@ const deleteComment = (postId, commentId, db, user) => {
   db.get("posts").updateById(postId, { comments }).write();
 
   // Send the response
-  return { message: "Comment Deleted", commentCount: comments.length, comments };
+  return {
+    message: "Comment Deleted",
+    commentCount: comments.length,
+    comments,
+  };
 };
 
-module.exports.PostService = { likePost, comment, deleteComment };
+//edit comment service
+
+const editComment = (postId, commentId, db, user, newComment) => {
+  const post = getPostById(postId, db);
+  const { id } = user;
+
+  const commentToEdit = post.comments.find(
+    (comment) => comment.id === commentId,
+  );
+
+  if (!commentToEdit) {
+    throw new Error("Comment not found");
+  }
+
+  //only the comment author can edit
+  if (commentToEdit.author.id !== id) {
+    throw new Error("You are not allowed to edit this comment");
+  }
+
+  const comments = post.comments.map((comment) =>
+    comment.id === commentId
+      ? { ...comment, comment: newComment, updatedAt: new Date() }
+      : comment,
+  );
+
+  db.get("posts").updateById(postId, { comments }).write();
+
+  return {
+    message: "Comment Updated",
+    commentCount: comments.length,
+    comments,
+  };
+};
+
+module.exports.PostService = { likePost, comment, deleteComment, editComment };
