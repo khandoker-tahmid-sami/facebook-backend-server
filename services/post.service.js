@@ -54,24 +54,21 @@ const comment = (postId, db, user, comment) => {
 };
 
 const deleteComment = (postId, commentId, db, user) => {
-  // Get the post from the database
   const post = getPostById(postId, db);
-
-  // Remove the comment from the comments array
-  const comments = post.comments.filter((comment) => comment.id !== commentId);
-
-  // get the user info
   const { id } = user;
 
+  const commentToDelete = post.comments.find((comment) => comment.id === commentId);
+
+  if (!commentToDelete) {
+    throw new Error("Comment not found");
+  }
+
   // Only Post Author or Comment Author Able to delete the comment
-  if (post.author.id != id || comments.find((comment) => comment.author.id !== id)) {
+  if (post.author.id !== id && commentToDelete.author.id !== id) {
     throw new Error("You are not allowed to delete this comment");
   }
 
-  // Check if the comment exists in comments array
-  if (comments.length === post.comments.length) {
-    throw new Error("Comment not found");
-  }
+  const comments = post.comments.filter((comment) => comment.id !== commentId);
 
   // Update the post with the new comments
   db.get("posts").updateById(postId, { comments }).write();
