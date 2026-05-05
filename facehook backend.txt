@@ -289,3 +289,28 @@ Good practice	Add /health endpoint	Quick fix
 Good practice	Use process.env.PORT, set NODE_ENV	Quick fix
 Good practice	Create .env.example and update .gitignore	Quick fix
 The database migration is the largest single task and the most important — everything else can be layered on top incrementally.
+
+
+
+
+
+
+
+
+********************************************Update in PostService.js******************************
+Found the bug. There are two problems on line 67 of services/post.service.js:
+
+Problem 1 — Wrong operator (|| should be &&):
+The condition says "throw error if user is not the post author OR if there's any comment from another user." This almost always triggers. It should throw only if the user is neither the post author nor the comment author — that requires &&.
+
+Problem 2 — Checking wrong array:
+The comment is filtered out on line 61 before the auth check. So comments no longer contains the deleted comment, and the code can't check who wrote it. The original comment's author must be found from post.comments first.
+
+Here's the fix:
+
+Edit d:\My Projects\facebook-backend-server\services\post.service.js
+Removed 3 lines
+Two bugs fixed in services/post.service.js:56-74:
+
+Find the comment first — commentToDelete is looked up from post.comments before any filtering, so we can actually check who wrote it.
+Authorization operator fixed — changed || to &&: the error now only throws when the user is neither the post author nor the comment author (previously || meant deleting your own comment on someone else's post would always fail).
