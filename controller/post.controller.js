@@ -61,17 +61,32 @@ const deletePost = (req, res) => {
 const updatePost = (req, res) => {
   const { db } = req.app;
   const { postId } = req.params;
+  const user = getAuthUser(req);
 
   const post = db.get("posts").find({ id: postId }).value();
+
   console.log(post);
   if (post == null || post == undefined || !post) {
     return res.status(404).send({ message: "No posts found" });
   }
 
+  if (post.author.id !== user.id) {
+    return res
+      .status(403)
+      .send({ message: "Your are not allowed to update the post" });
+  }
+
+  const updatedData = { ...req.body };
+
+  if (req.file) {
+    updatedData.image = `uploads/posts/${req?.file?.filename}`;
+    updatedData.postType = "image";
+  }
+
   const updatedPost = db
     .get("posts")
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    .updateById(postId, { ...req.body })
+    .updateById(postId, updatedData)
     .write();
 
   return res.status(200).send(updatedPost);
@@ -129,7 +144,7 @@ const deleteComment = (req, res) => {
 
 const editComment = (req, res) => {
   if (!req.body?.comment || req.body?.comment === "") {
-    return res.statu(400).send({ message: "Comment can not be empty" });
+    return res.status(400).send({ message: "Comment can not be empty" });
   }
 
   const { postId, commentId } = req.params;

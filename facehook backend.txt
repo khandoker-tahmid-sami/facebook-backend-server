@@ -400,3 +400,117 @@ Once done, test in Postman with:
 URL: PATCH {{BASE_URL}}/posts/<postId>/comment/<commentId>
 Body: { "comment": "edited text here" }
 Header: Authorization: Bearer <token>
+
+
+********************************What does req contrains******************************************
+
+Why do we pass req?
+
+Because req contains all information about the incoming request:
+
+req.headers
+req.body
+req.params
+req.query
+req.file
+
+
+The authentication token is usually inside:
+
+req.headers.authorization
+
+For example, the frontend may send:
+
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+
+So getAuthUser(req) probably checks this header.
+
+
+*******************************************Needs to update the updatePost endpoint ********************************************
+
+Found the issue. The PATCH route does have the multer middleware (postImage.single("image")), so the file upload reaches the server. But look at the updatePost controller on line 74:
+
+
+.updateById(postId, { ...req.body })
+It only spreads req.body — it completely ignores req.file. Even if you upload a new image, the controller never reads it.
+
+Compare with createNewPost which correctly handles req.file:
+
+
+image: req?.file?.filename ? `uploads/posts/${req?.file?.filename}` : null,
+The fix is in the backend updatePost controller — add req.file handling:
+
+
+const updatePost = (req, res) => {
+  const { db } = req.app;
+  const { postId } = req.params;
+
+  const post = db.get("posts").find({ id: postId }).value();
+  if (post == null || post == undefined || !post) {
+    return res.status(404).send({ message: "No posts found" });
+  }
+
+  const updateData = { ...req.body };
+
+  if (req.file) {
+    updateData.image = `uploads/posts/${req.file.filename}`;
+    updateData.postType = "image";
+  }
+
+  const updatedPost = db
+    .get("posts")
+    .updateById(postId, updateData)
+    .write();
+
+  return res.status(200).send(updatedPost);
+};
+The only change is building updateData first, then checking req.file before saving. The frontend code is already correct — the bug was entirely in the backend.
+
+
+
+*********Now I am thinking of updating the structure of updatePost endpoint **************************************
+
+const updatePost = (req, res) => {
+  const { db } = req.app;
+  const { postId } = req.params;
+  const user = getAuthUser(req);
+
+  const response = PostService.updatePost(
+    postId,
+    db,
+    user,
+    req.body,
+    req.file,
+  );
+
+  return res.status(200).send(response);
+};
+
+
+
+
+const updatePost = (postId, db, user, body, file) => {
+  const post = getPostById(postId, db);
+
+  if (!post) {
+    throw new Error("Post not found");
+  }
+
+  if (post.author.id !== user.id) {
+    throw new Error("You are not allowed to update this post");
+  }
+
+  const updateData = {
+    content: body?.content !== undefined ? body.content : post.content,
+    image: file?.filename ? `uploads/posts/${file.filename}` : post.image,
+    postType: file?.filename ? "image" : post.postType,
+    updatedAt: new Date(),
+  };
+
+  const updatedPost = db.get("posts").updateById(postId, updateData).write();
+
+  return {
+    message: "Post updated successfully",
+    post: updatedPost,
+  };
+};

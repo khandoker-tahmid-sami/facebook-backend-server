@@ -28,6 +28,7 @@ const likePost = (postId, user, db) => {
   }
 };
 
+// new comment service
 const comment = (postId, db, user, comment) => {
   // We will get the user details from the token
   const { id, name, avatar } = user;
