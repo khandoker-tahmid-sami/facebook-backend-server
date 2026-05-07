@@ -58,38 +58,57 @@ const deletePost = (req, res) => {
   return res.status(200).send({ message: "Post deleted successfully" });
 };
 
+// const updatePost = (req, res) => {
+//   const { db } = req.app;
+//   const { postId } = req.params;
+//   const user = getAuthUser(req);
+
+//   const post = db.get("posts").find({ id: postId }).value();
+
+//   console.log(post);
+//   if (post == null || post == undefined || !post) {
+//     return res.status(404).send({ message: "No posts found" });
+//   }
+
+//   if (post.author.id !== user.id) {
+//     return res
+//       .status(403)
+//       .send({ message: "Your are not allowed to update the post" });
+//   }
+
+//   const updatedData = { ...req.body };
+
+//   if (req.file) {
+//     updatedData.image = `uploads/posts/${req?.file?.filename}`;
+//     updatedData.postType = "image";
+//   }
+
+//   const updatedPost = db
+//     .get("posts")
+//     // eslint-disable-next-line node/no-unsupported-features/es-syntax
+//     .updateById(postId, updatedData)
+//     .write();
+
+//   return res.status(200).send(updatedPost);
+// };
+
+
+//update post controler
+
 const updatePost = (req, res) => {
   const { db } = req.app;
   const { postId } = req.params;
   const user = getAuthUser(req);
 
-  const post = db.get("posts").find({ id: postId }).value();
+  const response = PostService.updatePost(
+    postId,
+    db,
+    user,
+    req.body,
+    req.file
+  );
 
-  console.log(post);
-  if (post == null || post == undefined || !post) {
-    return res.status(404).send({ message: "No posts found" });
-  }
-
-  if (post.author.id !== user.id) {
-    return res
-      .status(403)
-      .send({ message: "Your are not allowed to update the post" });
-  }
-
-  const updatedData = { ...req.body };
-
-  if (req.file) {
-    updatedData.image = `uploads/posts/${req?.file?.filename}`;
-    updatedData.postType = "image";
-  }
-
-  const updatedPost = db
-    .get("posts")
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    .updateById(postId, updatedData)
-    .write();
-
-  return res.status(200).send(updatedPost);
+  return res.status(200).send(response)
 };
 
 const getSinglePost = (req, res) => {

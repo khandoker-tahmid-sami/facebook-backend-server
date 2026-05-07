@@ -4,6 +4,34 @@ const getPostById = (postId, db) => {
   return db.get("posts").find({ id: postId }).value();
 };
 
+//update post service
+
+const updatePost = (postId, db, user, body, file) => {
+  const post = getPostById(postId, db);
+
+  if (!post) {
+    throw new Error("Post not found");
+  }
+
+  if (post.author.id !== user.id) {
+    throw new Error("You are not allowed to update the post");
+  }
+
+  const updateData = {
+    content: body?.content !== undefined ? body.content : post.content,
+    image: file?.filename ? `uploads/posts/${file.filename}` : post.image,
+    postType: file?.filename ? "image" : post.postType,
+    updatedAt: new Date(),
+  };
+
+  const updatedPost = db.get("posts").updateById(postId, updateData).write();
+
+  return {
+    message: "Post updated Successfully",
+    post: updatedPost,
+  };
+};
+
 const likePost = (postId, user, db) => {
   // We will get the user details from the token
   const { id } = user;
@@ -124,4 +152,10 @@ const editComment = (postId, commentId, db, user, newComment) => {
   };
 };
 
-module.exports.PostService = { likePost, comment, deleteComment, editComment };
+module.exports.PostService = {
+  likePost,
+  comment,
+  deleteComment,
+  editComment,
+  updatePost,
+};
