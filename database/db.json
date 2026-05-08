@@ -609,8 +609,8 @@
       "avatar": "uploads/avatar/avatar-1777108576168-661207484.jpg",
       "email": "prinon96@gmail.com",
       "bio": "Working at Catch media",
-      "resetToken": "cce1bfd20856d3ef8e24f31c1c1801555c1e7e83709ba56e815738fd95872759",
-      "resetTokenExpiry": "2026-05-07T20:59:07.798Z"
+      "resetToken": "4313e9622c227214fd36d028f96abd0d11198b00c5dbe11389800d0de1b5418b",
+      "resetTokenExpiry": "2026-05-08T13:56:16.964Z"
     },
     {
       "id": "bc026e98-774c-43f4-a260-77dc3235d4f4",
@@ -618,7 +618,9 @@
       "firstName": "Khandoker",
       "lastName": "Sami",
       "avatar": "uploads/avatar/avatar-1777109865604-647803356.PNG",
-      "email": "prinon97@gmail.com"
+      "email": "prinon97@gmail.com",
+      "resetToken": "deb8d1d183baf54f09f985dfdce8d4b5e29db69df0ebacb7233550e181edc698",
+      "resetTokenExpiry": "2026-05-08T12:40:23.916Z"
     },
     {
       "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",

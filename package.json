@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon main.js"
+    "dev": "nodemon --ignore database/db.json main.js"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +21,7 @@
     "json-server-auth": "^2.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^8.0.7",
     "nodemon": "^3.0.3",
     "prettier": "^3.2.5",
     "resend": "^6.12.3"

@@ -551,24 +551,41 @@ Create a new file util/sendEmail.js:
 
 const nodemailer = require("nodemailer");
 
+const getGmailConfig = () => {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+
+  if (!user || !pass) {
+    throw new Error("Email is not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in .env.");
+  }
+
+  return { user, pass };
+};
+
 const sendEmail = async (to, subject, html) => {
+  const { user, pass } = getGmailConfig();
+
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user,
+      pass,
     },
   });
 
-  await transporter.sendMail({
-    from: `"Facebook App" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    html,
-  });
+  try {
+    await transporter.sendMail({
+      from: `"Facehook App" <${user}>`,
+      to,
+      subject,
+      html,
+    });
+  } catch (err) {
+    throw new Error(`Email delivery failed: ${err.message}`);
+  }
 };
-
-module.exports = sendEmail;
 
 
 
@@ -684,6 +701,7 @@ const resetPassword = async (token, newPassword, db) => {
 
   return { message: "Password reset successfully. You can now log in." };
 };
+
 Update the exports line:
 
 
@@ -868,3 +886,23 @@ Why This Happens
 When you select raw → JSON, Postman automatically sets the Content-Type: application/json header. Without that header, Express's express.json() middleware doesn't know the body is JSON, so it doesn't parse it — leaving req.body empty, which makes req.body.email undefined.
 
 That's why you get "Please provide your email" even though you typed the email — Express literally can't see it.
+
+
+
+******************************Update in nodemon*****************
+nodemon will check changes in our file and automatically restart dev server.
+But while sending email using nodemailer this is one issue. Writing secrect key in database and the server takes restart before passing to the mail sending function. 
+
+Thats why we have to do this in package.json file: 
+"dev": "nodemon --ignore database/db.json main.js"
+
+
+The issue is this:
+You call POST /auth/forgot-password
+Backend creates a reset token
+Backend writes that token into database/db.json
+nodemon sees database/db.json changed
+nodemon immediately restarts the server
+The request is still waiting for sendEmail()
+Server restarts, so the open connection is cut
+Postman shows: Error/mainly nothing.
