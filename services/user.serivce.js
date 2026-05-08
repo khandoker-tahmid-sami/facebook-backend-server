@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const getNewTokens = require("../util/getNewTokens");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const sendEmail = require("../util/sendEmail");
 
 const login = async (email, password, db) => {
   const user = db.get("users").find({ email }).value();
@@ -79,8 +80,61 @@ const refreshToken = async (refreshToken, db) => {
   return token;
 };
 
+//forget password service
+
+const forgotPassword = async(email, db) => {
+  //check if user exists
+  const user = db.get("users").find({ email }).value();
+
+  // console.log(user);
+
+  if (!user) {
+    throw new Error(`No account found with that email ${email}`);
+  }
+
+  //generate a secure random token
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  //set expiry to 1 hour fron now
+  const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+  //save token + expiry to database
+  db.get("users")
+    .find({ email })
+    .assign({ resetToken, resetTokenExpiry })
+    .write();
+
+
+  //build reset Link
+
+  const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`
+
+  await sendEmail(
+    email,
+    "Password Reset Request",
+    `
+      <h2>Password Reset</h2>
+      <p>You requested a password reset. Click the link below to reset your password.</p>
+      <p>This link expires in <strong>1 hour</strong>.</p>
+      <a href="${resetLink}" style="
+        background:#1877f2;
+        color:white;
+        padding:10px 20px;
+        text-decoration:none;
+        border-radius:5px;
+        display:inline-block;
+        margin-top:10px;
+      ">Reset Password</a>
+      <p>If you did not request this, ignore this email.</p>
+    `
+  );
+
+  return { message: "Password reset link sent to your email" };
+};
+
 module.exports.UserService = {
   login,
   register,
   refreshToken,
+  forgotPassword,
 };

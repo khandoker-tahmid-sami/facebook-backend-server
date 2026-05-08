@@ -1,8 +1,8 @@
+require("dotenv").config();
 const jsonServer = require("json-server");
 const customRouter = require("./router");
 const express = require("express");
 const checkAuth = require("./middleware/checkAuth");
-require("dotenv").config();
 const cors = require("cors");
 
 const app = jsonServer.create();
@@ -29,7 +29,7 @@ app.use(router);
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, _next) => {
   res.status(500).json({
-    error: err.message,
+    error: err.message || "Something went wrong",   // ← add fallback
   });
 });
 

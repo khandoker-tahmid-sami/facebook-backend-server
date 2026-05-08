@@ -1,0 +1,17 @@
+const { Resend } = require("resend");
+
+const sendEmail = async (to, subject, html) => {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const { error } = await resend.emails.send({
+    from: "Facehook App <onboarding@resend.dev>",
+    to,
+    subject,
+    html,
+  });
+
+  if (error) {
+    throw new Error(error.message || error.name || "Failed to send email");
+  }
+};
+
+module.exports = sendEmail;

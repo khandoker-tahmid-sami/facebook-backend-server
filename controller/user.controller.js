@@ -41,4 +41,19 @@ const refreshToken = async (req, res) => {
   res.status(200).json(result);
 };
 
-module.exports.UserController = { login, register, refreshToken };
+//forget password controller
+
+const forgotPassword = async(req, res) =>{
+  if(!req.body.email){
+    return res.status(400).json({message: "Please provide your email"})
+  }
+
+  const {email} = req.body;
+  const {db} = req.app;
+
+  const result = await UserService.forgotPassword(email, db);
+
+  return res.status(200).json(result)
+}
+
+module.exports.UserController = { login, register, refreshToken, forgotPassword };

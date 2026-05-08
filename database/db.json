@@ -520,7 +520,7 @@
     },
     {
       "id": "d042d1cd-55b8-4c38-9bee-f10d1c2d1c9f",
-      "content": "Eid day 1, 2026",
+      "content": "Eid day 1",
       "image": "uploads/posts/image-1778094596516-522092185.JPG",
       "postType": "image",
       "author": {
@@ -528,22 +528,24 @@
         "name": "Khandoker Tahmid Sami",
         "avatar": "uploads/avatar/avatar-1777108576168-661207484.jpg"
       },
-      "comments": [
-        {
-          "id": "4737a7cd-7eee-4326-9e3c-2765fec9282d",
-          "comment": "You looks beautiful",
-          "createdAt": "2026-05-06T07:32:38.947Z",
-          "author": {
-            "id": "f0be5f14-b29f-4e85-980c-4c040ec25c68",
-            "name": "Khandoker Tahmid Sami",
-            "avatar": "uploads/avatar/avatar-1777108576168-661207484.jpg"
-          },
-          "updatedAt": "2026-05-06T07:53:54.984Z"
-        }
-      ],
+      "comments": [],
       "likes": [],
       "createAt": "2026-04-28T17:55:49.176Z",
-      "updatedAt": "2026-05-06T19:37:08.180Z"
+      "updatedAt": "2026-05-07T18:12:33.075Z"
+    },
+    {
+      "id": "36d56ef3-17b1-40ce-b8ef-ea34c8b9ef73",
+      "content": "Its good",
+      "image": null,
+      "postType": "text",
+      "author": {
+        "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",
+        "name": "Halimatus Sadia Runa",
+        "avatar": "uploads/avatar/avatar-1777216248361-832904093.jpeg"
+      },
+      "comments": [],
+      "likes": [],
+      "createAt": "2026-05-07T18:08:09.091Z"
     }
   ],
   "comments": [],
@@ -606,7 +608,9 @@
       "lastName": "Sami",
       "avatar": "uploads/avatar/avatar-1777108576168-661207484.jpg",
       "email": "prinon96@gmail.com",
-      "bio": "Working at Catch media"
+      "bio": "Working at Catch media",
+      "resetToken": "cce1bfd20856d3ef8e24f31c1c1801555c1e7e83709ba56e815738fd95872759",
+      "resetTokenExpiry": "2026-05-07T20:59:07.798Z"
     },
     {
       "id": "bc026e98-774c-43f4-a260-77dc3235d4f4",
@@ -622,7 +626,9 @@
       "firstName": "Halimatus Sadia",
       "lastName": "Runa",
       "email": "sadiaruna48@gmail.com",
-      "avatar": "uploads/avatar/avatar-1777216248361-832904093.jpeg"
+      "avatar": "uploads/avatar/avatar-1777216248361-832904093.jpeg",
+      "resetToken": "d51352b5c179922f05ca0230b328b0f2878e6938e7d1e1eef154b9a0219b09ef",
+      "resetTokenExpiry": "2026-05-07T20:59:51.322Z"
     }
   ]
 }
