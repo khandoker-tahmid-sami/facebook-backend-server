@@ -2,7 +2,9 @@ const { UserService } = require("../services/user.serivce");
 
 const login = async (req, res) => {
   if (!req?.body?.email || !req?.body?.password) {
-    return res.status(400).json({ message: "Please provide email and password" });
+    return res
+      .status(400)
+      .json({ message: "Please provide email and password" });
   }
 
   const { email, password } = req.body;
@@ -14,7 +16,12 @@ const login = async (req, res) => {
 };
 
 const register = (req, res) => {
-  if (!req?.body?.email || !req?.body?.password || !req?.body?.firstName || !req?.body?.lastName) {
+  if (
+    !req?.body?.email ||
+    !req?.body?.password ||
+    !req?.body?.firstName ||
+    !req?.body?.lastName
+  ) {
     return res.status(400).json({
       message: "Please provide email, password, firstName and lastName",
     });
@@ -43,17 +50,48 @@ const refreshToken = async (req, res) => {
 
 //forget password controller
 
-const forgotPassword = async(req, res) =>{
-  if(!req.body.email){
-    return res.status(400).json({message: "Please provide your email"})
+const forgotPassword = async (req, res) => {
+  if (!req.body.email) {
+    return res.status(400).json({ message: "Please provide your email" });
   }
 
-  const {email} = req.body;
-  const {db} = req.app;
+  const { email } = req.body;
+  const { db } = req.app;
 
   const result = await UserService.forgotPassword(email, db);
 
-  return res.status(200).json(result)
-}
+  return res.status(200).json(result);
+};
 
-module.exports.UserController = { login, register, refreshToken, forgotPassword };
+//reset password controller
+
+const resetPassword = async (req, res) => {
+  const { token, newPassword, password } = req.body;
+  const newPass = newPassword || password;
+
+  if (!token || !newPass) {
+    return res
+      .status(400)
+      .json({ message: "Please provide token and new password" });
+  }
+
+  if (newPass.length < 6) {
+    return res
+      .status(400)
+      .json({ message: "Password must be atleast 6 characters" });
+  }
+
+  const { db } = req.app;
+
+  const result = await UserService.resetPassword(token, newPass, db);
+
+  return res.status(200).json(result);
+};
+
+module.exports.UserController = {
+  login,
+  register,
+  refreshToken,
+  forgotPassword,
+  resetPassword,
+};

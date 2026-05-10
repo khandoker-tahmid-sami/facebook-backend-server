@@ -603,14 +603,14 @@
     },
     {
       "id": "f0be5f14-b29f-4e85-980c-4c040ec25c68",
-      "password": "$2b$08$M400sawPtlfQBTOTbreF1eFwJ5oHNBK7PseigmEMNtzPsFdS1hdcG",
+      "password": "$2b$08$t.ZwAbaZXUFYJto1JQr6rOizmMVUWVpsAUfx5Rs6MuB6cj4XpX0Vi",
       "firstName": "Khandoker Tahmid",
       "lastName": "Sami",
-      "avatar": "uploads/avatar/avatar-1777108576168-661207484.jpg",
+      "avatar": "uploads/avatar/avatar-1778402144153-293854094.JPG",
       "email": "prinon96@gmail.com",
       "bio": "Working at Catch media",
-      "resetToken": "4313e9622c227214fd36d028f96abd0d11198b00c5dbe11389800d0de1b5418b",
-      "resetTokenExpiry": "2026-05-08T13:56:16.964Z"
+      "resetToken": "67009422e6fc4aaf099d51a1ab5ccbd45003653e02e16329480f2b94858997ba",
+      "resetTokenExpiry": "2026-05-10T09:25:15.423Z"
     },
     {
       "id": "bc026e98-774c-43f4-a260-77dc3235d4f4",
@@ -624,13 +624,13 @@
     },
     {
       "id": "da9bd328-adb3-4dc5-96c4-b4d02ac61234",
-      "password": "$2b$08$.gSLDzBXJ2zMM15Slrn6c.8B8sN4TSC3Itp7plQyTaUL8SVdY7z0K",
+      "password": "$2b$08$r5mDaPR9oXAdA2/oBzh9j.32kUQMFFCTxT6kw1GlRCQMxbff0TAl6",
       "firstName": "Halimatus Sadia",
       "lastName": "Runa",
       "email": "sadiaruna48@gmail.com",
       "avatar": "uploads/avatar/avatar-1777216248361-832904093.jpeg",
-      "resetToken": "d51352b5c179922f05ca0230b328b0f2878e6938e7d1e1eef154b9a0219b09ef",
-      "resetTokenExpiry": "2026-05-07T20:59:51.322Z"
+      "resetToken": null,
+      "resetTokenExpiry": null
     }
   ]
 }

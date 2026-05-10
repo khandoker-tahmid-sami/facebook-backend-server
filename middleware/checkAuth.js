@@ -8,7 +8,8 @@ const checkAuth = (req, res, next) => {
     req.path === "/auth/refresh-token" ||
     req.path === "/auth/login" ||
     req.path === "/auth/register" ||
-    req.path === "/auth/forgot-password"
+    req.path === "/auth/forgot-password" ||
+    req.path === "/auth/reset-password"
   ) {
     return next();
   }

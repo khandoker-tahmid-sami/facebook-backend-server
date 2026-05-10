@@ -82,7 +82,7 @@ const refreshToken = async (refreshToken, db) => {
 
 //forget password service
 
-const forgotPassword = async(email, db) => {
+const forgotPassword = async (email, db) => {
   //check if user exists
   const user = db.get("users").find({ email }).value();
 
@@ -104,10 +104,9 @@ const forgotPassword = async(email, db) => {
     .assign({ resetToken, resetTokenExpiry })
     .write();
 
-
   //build reset Link
 
-  const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`
+  const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
 
   await sendEmail(
     email,
@@ -126,10 +125,45 @@ const forgotPassword = async(email, db) => {
         margin-top:10px;
       ">Reset Password</a>
       <p>If you did not request this, ignore this email.</p>
-    `
+    `,
   );
 
   return { message: "Password reset link sent to your email" };
+};
+
+//rest password services
+
+const resetPassword = async (token, newPassword, db) => {
+  //find user by reset token
+  const user = db.get("users").find({ resetToken: token }).value();
+
+  if (!user) {
+    throw new Error("Invalid or expired reset token");
+  }
+
+  console.log(user)
+  //check if reset token expired
+  const isExpired = new Date() > new Date(user.resetTokenExpiry);
+
+  if (isExpired) {
+    throw new Error("Reset token expired. Please request a new one.");
+  }
+
+  //hash the new password
+  const hashedPassword = bcrypt.hashSync(newPassword, 8);
+
+  db.get("users")
+    .find({ resetToken: token })
+    .assign({
+      password: hashedPassword,
+      resetToken: null,
+      resetTokenExpiry: null,
+    })
+    .write();
+
+    console.log(user)
+
+  return { message: "Password reset successfully. You can now log in" };
 };
 
 module.exports.UserService = {
@@ -137,4 +171,5 @@ module.exports.UserService = {
   register,
   refreshToken,
   forgotPassword,
+  resetPassword,
 };
